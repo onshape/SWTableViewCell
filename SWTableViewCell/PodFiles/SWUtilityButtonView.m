@@ -43,7 +43,6 @@
                                                              constant:0.0]; // constant will be adjusted dynamically in -setUtilityButtons:.
         self.widthConstraint.priority = UILayoutPriorityDefaultHigh;
         [self addConstraint:self.widthConstraint];
-        
         _parentCell = parentCell;
         self.utilityButtonSelector = utilityButtonSelector;
         self.utilityButtons = utilityButtons;
@@ -68,7 +67,9 @@
     }
     
     _utilityButtons = [utilityButtons copy];
-    
+
+    CGFloat totalWidth = 0;
+
     if (utilityButtons.count)
     {
         NSUInteger utilityButtonsCounter = 0;
@@ -78,7 +79,16 @@
         {
             [self addSubview:button];
             button.translatesAutoresizingMaskIntoConstraints = NO;
-            
+
+            CGFloat buttonWidth = button.frame.size.width;
+            totalWidth += buttonWidth;
+            // Allow different width buttons
+            NSString *widthConstraint =  [NSString stringWithFormat:@"H:[button(==%f)]", buttonWidth];
+            [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:widthConstraint
+                                                                         options:0L
+                                                                         metrics:nil
+                                                                           views:NSDictionaryOfVariableBindings(button)]];
+
             if (!precedingView)
             {
                 // First button; pin it to the left edge.
@@ -89,8 +99,8 @@
             }
             else
             {
-                // Subsequent button; pin it to the right edge of the preceding one, with equal width.
-                [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[precedingView][button(==precedingView)]"
+                // Subsequent button; pin it to the right edge of the preceding one
+                [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[precedingView][button]"
                                                                              options:0L
                                                                              metrics:nil
                                                                                views:NSDictionaryOfVariableBindings(precedingView, button)]];
@@ -100,27 +110,22 @@
                                                                          options:0L
                                                                          metrics:nil
                                                                            views:NSDictionaryOfVariableBindings(button)]];
-            
-            
-            SWUtilityButtonTapGestureRecognizer *utilityButtonTapGestureRecognizer = [[SWUtilityButtonTapGestureRecognizer alloc] initWithTarget:_parentCell action:_utilityButtonSelector];
+
+            SWUtilityButtonTapGestureRecognizer *utilityButtonTapGestureRecognizer = [[SWUtilityButtonTapGestureRecognizer alloc] initWithTarget:_parentCell
+                                                                                                                                          action:_utilityButtonSelector];
             utilityButtonTapGestureRecognizer.buttonIndex = utilityButtonsCounter;
             [button addGestureRecognizer:utilityButtonTapGestureRecognizer];
-            
             utilityButtonsCounter++;
             precedingView = button;
         }
-        
         // Pin the last button to the right edge.
         [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"[precedingView]|"
                                                                      options:0L
                                                                      metrics:nil
                                                                        views:NSDictionaryOfVariableBindings(precedingView)]];
     }
-    
-    self.widthConstraint.constant = (width * utilityButtons.count);
-    
+    self.widthConstraint.constant = totalWidth;
     [self setNeedsLayout];
-    
     return;
 }
 

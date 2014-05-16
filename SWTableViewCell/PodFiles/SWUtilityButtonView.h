@@ -10,6 +10,7 @@
 @class SWTableViewCell;
 
 #define kUtilityButtonWidthDefault 90
+#define kUtilityButtonMinimumPadding 20
 
 @interface SWUtilityButtonView : UIView
 
