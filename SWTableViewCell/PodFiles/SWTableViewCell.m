@@ -78,6 +78,7 @@ static NSString * const kTableViewCellContentView = @"UITableViewCellContentView
     // Set up scroll view that will host our cell content
     self.cellScrollView = [[SWCellScrollView alloc] init];
     self.cellScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.cellScrollView.canCancelContentTouches = YES;
     self.cellScrollView.delegate = self;
     self.cellScrollView.showsHorizontalScrollIndicator = NO;
     self.cellScrollView.scrollsToTop = NO;

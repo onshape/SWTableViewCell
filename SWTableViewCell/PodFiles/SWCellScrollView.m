@@ -38,5 +38,10 @@
     return YES;
 }
 
+- (BOOL)touchesShouldCancelInContentView:(UIView *)view
+{
+    return YES;
+}
+
 @end
 
